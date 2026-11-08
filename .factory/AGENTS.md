@@ -24,6 +24,7 @@ Every agent in this factory reads this file first. If a rule here conflicts with
 - Micro-frontends are loaded with Native Federation. Respect the level rules in [knowledge/angular/micro-frontends.md](knowledge/angular/micro-frontends.md): a micro never imports another micro's code, only shared libraries.
 - Business rules live in `libs/<domain>/domain` as pure, framework-free TypeScript with unit tests. Components call them; they do not re-implement them.
 - UI components come from the shared design system (`libs/shared/ui`). Do not create one-off styled buttons, inputs or dialogs.
+- The `libs/*` paths in this file and in `knowledge/` are the factory's default layout. A target repository that uses other names maps them in its own `AGENTS.md`.
 
 ## UX rules that are easy to get wrong
 
