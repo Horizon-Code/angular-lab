@@ -16,4 +16,4 @@
 
 ## Mock API scenarios
 
-The lab's `libs/shared/mock-api` exposes named scenarios a test can switch on, e.g. `success`, `rejected:insufficient-funds`, `server-error`, `network-error`, `slow`, `empty`. Tests select a scenario; they never stub fetch by hand.
+The project provides a mock API with named scenarios a test can switch on, e.g. `success`, `rejected:insufficient-funds`, `server-error`, `network-error`, `slow`, `empty` (default location: `libs/shared/mock-api`). Tests select a scenario; they never stub `fetch` by hand. If the project has no mock API yet, the spec for the first feature that needs one creates it.
