@@ -1,0 +1,9 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [{ "type": "command", "command": "node scripts/agent-stop-check.mjs", "timeout": 180 }]
+      }
+    ]
+  }
+}

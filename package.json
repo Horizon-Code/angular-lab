@@ -6,6 +6,7 @@
     "build": "ng build shell && ng build finance-shell && ng build finance-banking",
     "test": "npm run test:domain && ng test shell --watch=false && ng test finance-banking --watch=false",
     "test:domain": "vitest run --config vitest.domain.config.ts",
+    "lint:arch": "sheriff verify",
     "ng": "ng"
   },
   "private": true,
@@ -27,6 +28,7 @@
     "@angular/cli": "^22.2.6",
     "@angular/compiler-cli": "^22.2.0",
     "@softarc/native-federation-orchestrator": "^4.8.0",
+    "@softarc/sheriff-core": "^0.20.0",
     "concurrently": "^9.2.5",
     "jsdom": "^30.0.0",
     "prettier": "^3.8.1",
