@@ -1,9 +1,13 @@
 import { TestBed } from '@angular/core/testing';
+import { CASH_ACCOUNT, INSTRUMENTS, RATES } from '@lab/finance-mock-api';
 import { OrderTicket } from './order-ticket';
 
 async function render() {
   await TestBed.configureTestingModule({ imports: [OrderTicket] }).compileComponents();
   const fixture = TestBed.createComponent(OrderTicket);
+  fixture.componentRef.setInput('instruments', INSTRUMENTS);
+  fixture.componentRef.setInput('cashAccount', CASH_ACCOUNT);
+  fixture.componentRef.setInput('rates', RATES);
   await fixture.whenStable();
   return { fixture, el: fixture.nativeElement as HTMLElement };
 }

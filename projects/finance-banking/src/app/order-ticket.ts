@@ -1,33 +1,6 @@
-import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
-import {
-  BuyingPowerCheck,
-  checkBuyingPower,
-  Currency,
-  money,
-  OrderIssue,
-  OrderSide,
-  OrderType,
-  RateTable,
-  validateOrder,
-} from '@lab/finance-domain';
-
-interface Instrument {
-  readonly symbol: string;
-  readonly name: string;
-  readonly price: number;
-  readonly currency: Currency;
-  readonly tickSize: number;
-  readonly held: number;
-}
-
-// Demo data until the mock API lands (next PR). Prices are illustrative.
-const INSTRUMENTS: readonly Instrument[] = [
-  { symbol: 'VWCE', name: 'Global equity ETF (EUR)', price: 128.4, currency: 'EUR', tickSize: 0.02, held: 12 },
-  { symbol: 'ACME', name: 'Acme Corp (USD)', price: 212.35, currency: 'USD', tickSize: 0.01, held: 0 },
-  { symbol: 'BRIT', name: 'British Utilities (London, quoted in pence)', price: 1245, currency: 'GBp', tickSize: 0.5, held: 40 },
-];
-const RATES: RateTable = { 'USD->EUR': 0.92, 'GBP->EUR': 1.17 };
-const CASH = money(5000, 'EUR');
+import { Component, computed, input, linkedSignal, signal } from '@angular/core';
+import type { CashAccount, Instrument, RateTable } from '@lab/finance-data-access';
+import { BuyingPowerCheck, checkBuyingPower, money, OrderIssue, OrderSide, OrderType, validateOrder } from '@lab/finance-domain';
 
 const ISSUE_TEXT: Readonly<Record<OrderIssue, string>> = {
   'quantity-not-positive': 'Enter a quantity greater than zero.',
@@ -38,17 +11,16 @@ const ISSUE_TEXT: Readonly<Record<OrderIssue, string>> = {
   'position-exceeded': 'You cannot sell more than your available position.',
 };
 
+/** The order form. Receives its data from the page; owns only the client's entries. */
 @Component({
   selector: 'banking-order-ticket',
-  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <h1>Buy or sell</h1>
-    <p class="lead">Cash account: {{ cash.amount }} {{ cash.currency }}. Checks here guide you; the bank validates the order at review.</p>
+    <p class="lead">{{ cashAccount().name }}: {{ cash().amount }} {{ cash().currency }}. Checks here guide you; the bank validates the order at review.</p>
 
     <form class="ticket" (submit)="$event.preventDefault(); review()">
       <label>Instrument
         <select [value]="symbol()" (change)="symbol.set($any($event.target).value)">
-          @for (i of instruments; track i.symbol) {
+          @for (i of instruments(); track i.symbol) {
             <option [value]="i.symbol">{{ i.symbol }} — {{ i.name }}</option>
           }
         </select>
@@ -109,7 +81,6 @@ const ISSUE_TEXT: Readonly<Record<OrderIssue, string>> = {
     </form>
   `,
   styles: `
-    h1 { margin: 0 0 .25rem; }
     .lead { color: var(--lab-muted); margin: 0 0 1.25rem; max-width: 40rem; }
     .ticket { display: grid; gap: .9rem; max-width: 28rem; background: var(--lab-surface); border: 1px solid var(--lab-border); border-radius: 12px; padding: 1.25rem; }
     label { display: grid; gap: .3rem; font-weight: 600; font-size: .9rem; }
@@ -128,18 +99,21 @@ const ISSUE_TEXT: Readonly<Record<OrderIssue, string>> = {
   `,
 })
 export class OrderTicket {
-  protected readonly instruments = INSTRUMENTS;
-  protected readonly issueText = ISSUE_TEXT;
-  protected readonly cash = CASH;
+  readonly instruments = input.required<readonly Instrument[]>();
+  readonly cashAccount = input.required<CashAccount>();
+  readonly rates = input.required<RateTable>();
 
-  protected readonly symbol = signal(INSTRUMENTS[0].symbol);
+  protected readonly issueText = ISSUE_TEXT;
+  protected readonly cash = computed(() => this.cashAccount().available);
+
+  protected readonly symbol = linkedSignal(() => this.instruments()[0]?.symbol ?? '');
   protected readonly side = signal<OrderSide>('buy');
   protected readonly type = signal<OrderType>('market');
   protected readonly quantity = signal(1);
   protected readonly price = signal<number | undefined>(undefined);
   protected readonly reviewed = signal(false);
 
-  protected readonly instrument = computed(() => INSTRUMENTS.find((i) => i.symbol === this.symbol()) ?? INSTRUMENTS[0]);
+  protected readonly instrument = computed(() => this.instruments().find((i) => i.symbol === this.symbol()) ?? this.instruments()[0]);
 
   private readonly unitPrice = computed(() => (this.type() === 'market' ? this.instrument().price : (this.price() ?? 0)));
 
@@ -158,7 +132,7 @@ export class OrderTicket {
 
   protected readonly buyingPower = computed<BuyingPowerCheck | null>(() => {
     if (this.estimate() <= 0) return null;
-    return checkBuyingPower({ estimatedCost: money(this.estimate(), this.instrument().currency), available: CASH, rates: RATES });
+    return checkBuyingPower({ estimatedCost: money(this.estimate(), this.instrument().currency), available: this.cash(), rates: this.rates() });
   });
 
   protected setPrice(raw: string): void {

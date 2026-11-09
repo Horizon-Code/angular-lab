@@ -5,6 +5,8 @@
   "compilerOptions": {
     "paths": {
       "@lab/finance-domain": ["./libs/finance/domain/src/index.ts"],
+      "@lab/finance-data-access": ["./libs/finance/data-access/src/index.ts"],
+      "@lab/finance-mock-api": ["./libs/finance/mock-api/src/index.ts"],
       "@lab/shared-ui": ["./libs/shared/ui/src/index.ts"]
     },
     "noImplicitOverride": true,
