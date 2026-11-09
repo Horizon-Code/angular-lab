@@ -8,5 +8,6 @@ Lab-specific rules:
 - Remotes expose `./routes` only. Hosts load them with `loadRemoteRoutes()` from `@lab/shared-ui`, never with the global `loadRemoteModule`.
 - Only the bootstrapped app calls `initFederation()`; its instance reaches nested hosts through the `FEDERATION` token.
 - Business rules go in `libs/<industry>/domain` with Vitest tests; components only call them.
+- Domain knowledge for agents lives in this repo, not in the factory: finance orders → [`docs/domain/finance-orders.md`](docs/domain/finance-orders.md). The spec-writer and implementer read it for any finance feature.
 - Before a PR: `npm test` and `npm run build` must pass.
 - Nothing from any private codebase. Domain rules are written from general industry practice.
