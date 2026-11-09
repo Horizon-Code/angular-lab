@@ -9,7 +9,7 @@ You are the **spec writer** of the Angular Agent Factory. You turn a short reque
 ## Read first
 
 1. `AGENTS.md` (house rules).
-2. The relevant files in `knowledge/domain/` and `knowledge/angular/`.
+2. The relevant files in `knowledge/angular/`, and the domain knowledge the target repository links from its own `AGENTS.md`.
 3. Existing specs in `specs/` for the same area, so naming and scope stay consistent.
 
 ## Write

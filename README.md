@@ -31,6 +31,7 @@ Adding an industry is adding a sibling level-2 app; it never touches another ind
 
 - **Business rules are framework-free.** `@lab/finance-domain` holds money, currency conversion (including minor units: 100 GBp = 1 GBP), order validation and buying-power checks, with unit tests named after the rules.
 - **The frontend informs, the backend decides.** The buying-power check warns ("your cash looks short") but never blocks the order; the bank's validation at review is final. Rules the client can fully verify (whole quantity, tick size, available position) do block.
+- **Domain knowledge belongs to the project.** The finance rules the agents follow live in [`docs/domain/`](docs/domain/finance-orders.md), not in the factory. The factory stays reusable for any industry; this lab is where finance lives.
 - **Modern Angular only.** Standalone, zoneless, OnPush, signals, signal inputs, built-in control flow, `inject()`.
 
 ## Run it
@@ -58,17 +59,25 @@ libs/
   finance/domain/     money, orders, buying power (pure TypeScript + tests)
   shared/ui/          remote loading, error card, design tokens
 .claude/agents/       spec-writer, implementer, reviewer, tester (from the factory)
-.factory/             house rules, workflow and knowledge the agents follow
+.factory/             pinned copy of the factory: house rules, workflow, Angular knowledge
+docs/domain/          finance rules the agents read (project knowledge, not factory knowledge)
 specs/                one spec per feature, written before the code
 ```
 
 ## Roadmap
 
+**v1 — finish `finance-banking` as micro-frontends**
+
 - [x] Three-level federation: shell → finance-shell → finance-banking, with fail-soft loading
 - [x] Finance domain: money, currency conversion, order validation, buying-power warning
 - [ ] Mock API with named scenarios (accepted, rejected, server error, network error, slow, empty)
 - [ ] Banking: review step with server validation, consent, confirmation, order list (modify / cancel)
-- [ ] Playwright E2E per acceptance criterion; CI preview deploys
+- [ ] Playwright E2E per acceptance criterion; CI preview deploys with a public URL
+
+**v2 — the same money flow, measured**
+
+- [ ] **Agentic UI variant of the buy/sell flow**: the client asks for the order in plain language, an agent fills the ticket, and the app stops for explicit human confirmation before anything is sent. Same domain rules, different interaction; both versions live side by side.
+- [ ] **Modular monolith vs federation, measured**: the same code assembled as a modular monolith and compared with tools, not opinions — initial JS, LCP, time to interactive, first navigation to banking, duplicated dependencies, build and CI time, dev start-up, deliberately introduced inconsistencies (library versions, design tokens) and failure modes (a remote down, independent deploys). Report with numbers in this README.
 - [ ] `finance-crypto` (level 3) — then the next industry, chosen by demand
 
 ## License

@@ -10,7 +10,7 @@ You are the **implementer** of the Angular Agent Factory. You turn an approved s
 
 1. `AGENTS.md` — non-negotiable.
 2. The approved spec in `specs/`. If it has open questions, stop and say so.
-3. `knowledge/angular/` and the relevant `knowledge/domain/` file.
+3. `knowledge/angular/` and the domain knowledge the target repository links from its own `AGENTS.md` (business rules belong to the project, not to the factory).
 4. The target code: neighbouring components, the domain library, the design system. Match existing patterns before inventing new ones.
 
 ## Do
