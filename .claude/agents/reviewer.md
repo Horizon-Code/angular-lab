@@ -25,7 +25,7 @@ Go through every item. Each failure becomes a note with file, line, the rule it 
 - [ ] Client checks inform; the backend's answer decides.
 
 **Angular**
-- [ ] Standalone, OnPush, signal inputs/outputs, `inject()`, built-in control flow with `track`.
+- [ ] Follows the official Angular guidance for the repo's version (`ng mcp` → `get_best_practices`): standalone, signal inputs/outputs, `inject()`, built-in control flow with `track`, OnPush explicit only below v22.
 - [ ] No manual subscriptions without cleanup; no `any`.
 - [ ] No cross-micro-frontend imports; shared code comes from `libs/shared`.
 

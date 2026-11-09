@@ -31,6 +31,14 @@ Related: <links to previous specs, issues>
 - **AC-1** — Given …, when …, then …
 - **AC-2** — …
 
+## Tasks
+
+Small steps, each with the files or folders it may touch (its boundary). The implementer works one task at a time; a task that needs to cross its boundary goes back to the spec.
+
+| ID | Task | Boundary | Covers |
+|---|---|---|---|
+| T-1 | | | AC-… |
+
 ## Out of scope
 
 -
