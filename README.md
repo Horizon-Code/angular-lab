@@ -25,6 +25,8 @@ Adding an industry is adding a sibling level-2 app; it never touches another ind
 ### Decisions worth reading
 
 - **One federation runtime.** Only the bootstrapped app calls `initFederation()`. Its instance is provided through Angular DI (`FEDERATION` token in `@lab/shared-ui`), so a nested host registers its products with `initRemoteEntry` instead of initialising federation again. See [`load-remote-routes.ts`](libs/shared/ui/src/load-remote-routes.ts).
+- **Architecture as an executable contract.** [Sheriff](https://github.com/softarc-consulting/sheriff) (Angular Architects) enforces the levels in CI and in the agents' Stop hook: no app imports another, the root shell is industry-agnostic, and an industry only sees its own domain. Each rule was proven by provoking a violation — one of them only passed after the provoked test caught a rule that was too permissive. See [the spike](docs/spikes/2026-11-factory-layers.md).
+- **Depth 2, on purpose.** Luca Mezzalira's boundary rules say micro-frontends should not nest (depth 1). This lab nests one level deeper deliberately, and only as a route-level vertical split: each level is a full host for its domain, nothing is composed at component level, at most three deployed units share a view, and every level fails soft. Whether the extra level pays off is what the v2 monolith-vs-federation measurement is for.
 - **Fail soft.** If a remote is down, its host renders an error card with retry; the rest of the app keeps working.
 
   ![Banking down: the Finance shell still works and shows an error card](docs/img/fail-soft.png)
