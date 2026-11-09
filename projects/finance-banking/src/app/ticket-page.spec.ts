@@ -22,6 +22,7 @@ describe('TicketPage — the ticket loads from the API', () => {
     fixture.detectChanges();
     expect(text()).toContain('Loading instruments and your cash account…');
     expect(el.querySelector('form')).toBeNull();
+    fixture.destroy(); // cancels the pending slow response
   });
 
   it('AC-2: shows instruments, cash account and estimate from the API', async () => {
@@ -38,6 +39,7 @@ describe('TicketPage — the ticket loads from the API', () => {
     async (failure) => {
       let scenario: MockScenario = failure;
       const { fixture, el, text, button } = await render(() => scenario);
+      document.body.appendChild(el);
       await fixture.whenStable();
       expect(text()).toContain("We couldn't load your instruments and cash account.");
       expect(el.querySelector('[role="alert"]')).not.toBeNull();
@@ -48,6 +50,7 @@ describe('TicketPage — the ticket loads from the API', () => {
       await fixture.whenStable();
       expect(el.querySelector('form')).not.toBeNull();
       expect(text()).not.toContain("We couldn't load");
+      expect(document.activeElement?.textContent).toBe('Buy or sell');
     },
   );
 

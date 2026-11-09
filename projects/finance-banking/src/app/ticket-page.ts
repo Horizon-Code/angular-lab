@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, viewChild } from '@angular/core';
 import { injectTicketData } from '@lab/finance-data-access';
 import { OrderTicket } from './order-ticket';
 
@@ -7,7 +7,7 @@ import { OrderTicket } from './order-ticket';
   selector: 'banking-ticket-page',
   imports: [OrderTicket],
   template: `
-    <h1>Buy or sell</h1>
+    <h1 #heading tabindex="-1">Buy or sell</h1>
     @let state = data.state();
     @switch (state.status) {
       @case ('loading') {
@@ -16,7 +16,7 @@ import { OrderTicket } from './order-ticket';
       @case ('error') {
         <section class="state error" role="alert">
           <p>We couldn't load your instruments and cash account.</p>
-          <button type="button" (click)="data.reload()">Try again</button>
+          <button type="button" (click)="retry()">Try again</button>
         </section>
       }
       @case ('empty') {
@@ -29,6 +29,7 @@ import { OrderTicket } from './order-ticket';
   `,
   styles: `
     h1 { margin: 0 0 .25rem; }
+    h1:focus { outline: none; }
     .state { color: var(--lab-muted); max-width: 28rem; }
     .error { border: 1px solid var(--lab-border); border-radius: 12px; padding: 1rem 1.25rem; color: var(--lab-ink); }
     .error p { margin: 0 0 .75rem; }
@@ -38,4 +39,11 @@ import { OrderTicket } from './order-ticket';
 })
 export class TicketPage {
   protected readonly data = injectTicketData();
+  private readonly heading = viewChild.required<ElementRef<HTMLElement>>('heading');
+
+  /** The Try again button disappears on retry: keep keyboard focus on the page heading. */
+  protected retry(): void {
+    this.heading().nativeElement.focus();
+    this.data.reload();
+  }
 }

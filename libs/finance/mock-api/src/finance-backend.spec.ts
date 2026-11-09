@@ -46,6 +46,12 @@ describe('mock finance API — scenarios', () => {
     expect(backend('accepted').handle({ method: 'POST', path: '/orders/preview', body: draft })).toMatchObject({ body: { consentRequired: false } });
   });
 
+  it('answers 400 for an unknown instrument and 404 for an unknown preview, instead of a fake business rejection', () => {
+    const b = backend('accepted');
+    expect(b.handle({ method: 'POST', path: '/orders/preview', body: { ...draft, symbol: 'NOPE' } })).toMatchObject({ kind: 'http-error', status: 400 });
+    expect(b.handle({ method: 'POST', path: '/orders', body: { previewId: 'PV-404' } })).toMatchObject({ kind: 'http-error', status: 404 });
+  });
+
   it('answers 404 for routes outside the contract', () => {
     expect(backend('accepted').handle({ method: 'DELETE', path: '/orders' })).toEqual({ kind: 'not-found' });
   });

@@ -57,10 +57,16 @@ export class FinanceBackend {
         return ok(CASH_ACCOUNT);
       case 'GET /rates':
         return ok(RATES);
-      case 'POST /orders/preview':
-        return ok(this.preview(request.body as OrderDraftRequest, scenario));
-      default:
-        return ok(this.place((request.body as { previewId: string }).previewId));
+      case 'POST /orders/preview': {
+        const draft = request.body as OrderDraftRequest;
+        if (!INSTRUMENTS.some((i) => i.symbol === draft.symbol)) return { kind: 'http-error', status: 400, delayMs };
+        return ok(this.preview(draft, scenario));
+      }
+      default: {
+        const { previewId } = request.body as { previewId: string };
+        if (!this.previews.has(previewId)) return { kind: 'http-error', status: 404, delayMs };
+        return ok(this.place(previewId));
+      }
     }
   }
 
@@ -68,8 +74,7 @@ export class FinanceBackend {
     if (scenario.startsWith('rejected:')) {
       return { outcome: 'rejected', reason: scenario.slice('rejected:'.length) as RejectionReason };
     }
-    const instrument = INSTRUMENTS.find((i) => i.symbol === draft.symbol);
-    if (!instrument) return { outcome: 'rejected', reason: 'invalid-price' };
+    const instrument = INSTRUMENTS.find((i) => i.symbol === draft.symbol)!;
 
     const accountCurrency = CASH_ACCOUNT.available.currency;
     const unitPrice = draft.type === 'market' || draft.price === undefined ? instrument.price : draft.price;
@@ -86,7 +91,6 @@ export class FinanceBackend {
 
   /** Idempotent per preview: confirming the same preview twice returns the same order. */
   private place(previewId: string): PlaceOrderResponse {
-    if (!this.previews.has(previewId)) return { outcome: 'rejected', reason: 'invalid-price' };
     let orderId = this.placed.get(previewId);
     if (!orderId) {
       orderId = `ORD-${String(this.nextId++).padStart(6, '0')}`;
