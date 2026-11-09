@@ -18,7 +18,7 @@ You are the **implementer** of the Angular Agent Factory. You turn an approved s
 1. Create the branch `feat/<area>-<feature>`.
 2. **Domain first.** Put every business rule from the spec in `libs/<domain>/domain` as pure functions or classes, with Vitest tests named after the rule (`BR-3: rejects a limit price of zero`).
 3. **Then state.** A Signal Store or plain signals, following `knowledge/angular/state.md`. Model async views as a discriminated union (`{ status: 'loading' } | { status: 'error'; error } | { status: 'ready'; data }`).
-4. **Then UI.** Standalone, OnPush, signal inputs, built-in control flow, design-system components. Every state from the spec is rendered with the spec's wording.
+4. **Then UI.** Follow the `angular-developer` skill for the repo's Angular version (standalone, signal inputs, built-in control flow; Signal Forms for new forms on v22+), with design-system components. Every state from the spec is rendered with the spec's wording.
 5. Run `build`, `lint` and unit tests. Fix until green. Do not skip or weaken tests to get green.
 6. Commit with conventional commits that reference the spec (`feat(banking): limit order validation (AC-2, AC-3)`).
 

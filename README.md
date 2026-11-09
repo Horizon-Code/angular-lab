@@ -34,6 +34,7 @@ Adding an industry is adding a sibling level-2 app; it never touches another ind
 - **Business rules are framework-free.** `@lab/finance-domain` holds money, currency conversion (including minor units: 100 GBp = 1 GBP), order validation and buying-power checks, with unit tests named after the rules.
 - **The frontend informs, the backend decides.** The buying-power check warns ("your cash looks short") but never blocks the order; the bank's validation at review is final. Rules the client can fully verify (whole quantity, tick size, available position) do block.
 - **Domain knowledge belongs to the project.** The finance rules the agents follow live in [`docs/domain/`](docs/domain/finance-orders.md), not in the factory. The factory stays reusable for any industry; this lab is where finance lives.
+- **The mock API sits at the HTTP layer, owned by the product.** Banking provides its own `HttpClient` with a mock interceptor in its `./routes`, so components use real `HttpClient`/`httpResource` calls against a written contract (`libs/finance/data-access`). The hosts know nothing about banking's API, the lab deploys as static files, and a real BFF replaces the mock by removing one interceptor. The "bank" itself is pure TypeScript with its own tests, and confirming the same preview twice never places two orders.
 - **Modern Angular only.** Standalone, zoneless, OnPush, signals, signal inputs, built-in control flow, `inject()`.
 
 ## Run it
@@ -58,7 +59,9 @@ projects/
   finance-shell/      level 2 — exposes ./routes, hosts finance products
   finance-banking/    level 3 — exposes ./routes
 libs/
-  finance/domain/     money, orders, buying power (pure TypeScript + tests)
+  finance/domain/       money, orders, buying power (pure TypeScript + tests)
+  finance/data-access/  API contract and client for /api/finance
+  finance/mock-api/     in-browser mock of that API with named scenarios
   shared/ui/          remote loading, error card, design tokens
 .claude/agents/       spec-writer, implementer, reviewer, tester (from the factory)
 .factory/             pinned copy of the factory: house rules, workflow, Angular knowledge
@@ -72,7 +75,7 @@ specs/                one spec per feature, written before the code
 
 - [x] Three-level federation: shell → finance-shell → finance-banking, with fail-soft loading
 - [x] Finance domain: money, currency conversion, order validation, buying-power warning
-- [ ] Mock API with named scenarios (accepted, rejected, server error, network error, slow, empty)
+- [x] Mock API with named scenarios (accepted, consent, four rejections, server error, network error, slow, empty) — try `?scenario=server-error`
 - [ ] Banking: review step with server validation, consent, confirmation, order list (modify / cancel)
 - [ ] Playwright E2E per acceptance criterion; CI preview deploys with a public URL
 

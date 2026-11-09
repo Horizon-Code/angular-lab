@@ -10,14 +10,14 @@ Every agent in this factory reads this file first. If a rule here conflicts with
 
 ## Angular baseline (v20+)
 
-- Standalone components only. No new `NgModule`s.
-- `ChangeDetectionStrategy.OnPush` on every component; the apps are zoneless.
-- Signals for local and shared state: `signal`, `computed`, `linkedSignal`, `resource` / `httpResource`. Use RxJS where streams are the natural model (websockets, debounced input, complex async orchestration), and convert at the edges with `toSignal` / `toObservable`.
-- Component inputs and outputs with `input()`, `input.required()`, `model()` and `output()`.
-- Built-in control flow (`@if`, `@for` with `track`, `@switch`, `@defer`). No structural directive equivalents.
-- `inject()` instead of constructor injection.
+Generic Angular comes from the source, not from this file: use the official [`angular-developer` skill](https://angular.dev/ai/agent-skills) and the Angular CLI MCP server (`ng mcp`, tool `get_best_practices`) for the version the target repository runs. Check the version first; defaults change between majors (e.g. OnPush is the default from v22 and must not be set explicitly; Signal Forms are preferred for new forms from v22).
+
+House deltas on top of the official guidance:
+
+- Zoneless apps; on v20–21 set `ChangeDetectionStrategy.OnPush` explicitly.
 - Feature state with NgRx Signal Store when it is shared across components; plain signals otherwise. See [knowledge/angular/state.md](knowledge/angular/state.md).
-- Strict TypeScript. No `any`; prefer discriminated unions for states.
+- RxJS only where streams are the natural model (websockets, debounced input, complex async orchestration); convert at the edges with `toSignal` / `toObservable`.
+- Strict TypeScript. No `any`; discriminated unions for states.
 
 ## Architecture
 
